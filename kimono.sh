@@ -91,7 +91,6 @@
 # environment variables above to configure operation:
 #
 #     --format | -F format ; see `FORMAT`
-#     --format-list ; see `FORMAT`
 #     --script | -s script ; see `SCRIPT`
 #     --playlist | -P | -p filename ; see `PLAYLIST`
 #     --fragments n ; see `FRAGMENTS`
@@ -101,6 +100,11 @@
 #     --dryrun ; see `DRYRUN`
 #     --quiet | -q ; see `QUIET`
 #     --verbose | -V ; see `VERBOSE`
+#
+# These command-line options are equivalent to the given scripts:
+#
+#     --format-list ; see `format.sh`
+#     --javascript ; see `playlist.sh`
 #
 # These options display help, version and usage information:
 #
@@ -166,7 +170,10 @@ while [ : ] ; do
             shift 2 ;;
         --format-list)
             SCRIPT="format"
-            shift 2 ;;
+            shift ;;
+        --javascript)
+            SCRIPT="playlist"
+            shift ;;
         -P | -p | --playlist)
             PLAYLIST="$2"
             shift 2 ;;
@@ -264,7 +271,9 @@ fi
 
 # check available formats
 if [[ "${script}" = "format" ]] ; then
-    yt-dlp -F ${source}
+    yt-dlp -F \
+            --cookies-from-browser chrome \
+            ${source}
     exit
 fi
 
