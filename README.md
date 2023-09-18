@@ -1,7 +1,6 @@
 # K I M O N O . S H
 
-> Version: 0.8.5
->
+> Version: 0.8.5  
 > Updated: 14 September 2023
 
 Downloads video and audio files from [YouTube](https://youtu.be/) using
@@ -142,10 +141,7 @@ download the video into the `${MOVIES}/Lectures/MIT-1001/` target folder:
 
 ---
 
-> Copyright: 2023 by Andrew Donald Kennedy
->
-> License: CC BY-SA 4.0
->
-> Author: [andrew.international@gmail.com](mailto:andrew.international+kimono@gmail.com)
->
+> Copyright: 2023 by Andrew Donald Kennedy  
+> License: CC BY-SA 4.0  
+> Author: [andrew.international@gmail.com](mailto:andrew.international+kimono@gmail.com)  
 > Source: [grkvlt/kimono-channel-access](https://github.com/grkvlt/kimono-channel-access.git)

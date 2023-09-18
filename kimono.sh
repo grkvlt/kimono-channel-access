@@ -3,8 +3,8 @@
 # K I M O N O . S H
 # =================
 #
-# Version: 0.8.5
-# Updated: 14 September 2023
+# Version: 0.8.6
+# Updated: 16 September 2023
 #
 # Downloads video and audio files from https://youtu.be/ using
 # the yt-dlp(1) utility. See the README.md file on GitHub for
@@ -27,7 +27,7 @@
 #     cut -d, -f2 videos.csv | video.sh 
 #     DEBUG=y SCRIPT=video kimono.sh XxxxxXXX
 #     movies.sh XxxxxXXX XxxxxXYY
-# 
+#
 # Copyright: 2023 by Andrew Donald Kennedy
 # License: CC BY-SA 4.0
 # Author: mailto:andrew.international@gmail.com
@@ -104,7 +104,7 @@ while [ : ] ; do
         --version)
             version
             exit 0 ;;
-        -h | --help | --usage)
+        -h | --help | --usage | -\?)
             help
             exit 0 ;;
         --) shift
