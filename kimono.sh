@@ -55,7 +55,7 @@ function version() {
 }
 
 # parse command-line arguments
-short="F:P:p:T:t:s:DqVh"
+short="F:P:p:T:t:s:DqVh?"
 long="format:,playlist:,fragments:,target:,script:,debug,trace,dryrun,quiet,verbose,version,help,usage"
 arguments=$(getopt -o ${short} --long ${long} -- "$@")
 if [[ $? -ne 0 ]]; then
