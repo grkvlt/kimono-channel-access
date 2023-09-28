@@ -3,8 +3,8 @@
 # K I M O N O . S H
 # =================
 #
-# Version: 0.8.6
-# Updated: 16 September 2023
+# Version: 0.8.8
+# Updated: 28 September 2023
 #
 # Downloads video and audio files from https://youtu.be/ using
 # the yt-dlp(1) utility. See the README.md file on GitHub for
@@ -56,7 +56,7 @@ function version() {
 
 # parse command-line arguments
 short="F:P:p:T:t:s:DqVh?"
-long="format:,playlist:,fragments:,target:,script:,debug,trace,dryrun,quiet,verbose,version,help,usage"
+long="format:,format-list,javascript,playlist:,fragments:,target:,script:,debug,trace,dryrun,quiet,verbose,version,help,usage"
 arguments=$(getopt -o ${short} --long ${long} -- "$@")
 if [[ $? -ne 0 ]]; then
     help
@@ -107,7 +107,8 @@ while [ : ] ; do
         -h | --help | --usage | -\?)
             help
             exit 0 ;;
-        --) shift
+        --)
+            shift
             break ;;
         *)
             help

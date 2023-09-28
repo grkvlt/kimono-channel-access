@@ -1,7 +1,7 @@
 # K I M O N O . S H
 
-> Version: 0.8.5  
-> Updated: 14 September 2023
+> Version: 0.8.8  
+> Updated: 28 September 2023
 
 Downloads video and audio files from [YouTube](https://youtu.be/) using
 the _yt-dlp(1)_ utility.
@@ -24,23 +24,23 @@ functions. To download files using configuration values that are optimised
 for specific types of content, the following script names have been
 defined:
 
-- youtube:
-    Download videos as MP4 with qualty audio at up to 1080p
-- podcast
-    Download a podcast with low quality video and decent audio
-- audio:
-    Download the audio only as best quality MP3
-- video:
-    Download videos with best overall quality
+- youtube.sh:
+    Download videos as MP4 with qualty audio at up to 1080p resolution.
+- podcast.sh:
+    Download a podcast with low quality video and decent audio.
+- audio.sh:
+    Download the audio only as best quality MP3.
+- video.sh:
+    Download videos with best overall quality.
 
 Alternative functions can also be performed using the following names:
 
-- format:
-    List available formats for a video id
-- playlist:
-    Generate the JS code to create a playlist file from a YouTube mix
-- movies:
-    Check if files are already downloaded
+- formats.sh:
+    List available formats for a video id.
+- playlist.sh:
+    Generate the JS code to create a playlist file from a YouTube mix.
+- movies.sh:
+    Check if files are already downloaded to `~/Movies` folder.
 
 Note that the `SCRIPT` variable or `--script` option can also be used to
 access these functions.
@@ -82,7 +82,7 @@ These variables can be set to configure output logging:
 - `DRYRUN`:
     Display `yt-dlp` command without executing.
 - `DEBUG`:
-    Enable script debug output.  Set to 'trace' for full command logging.
+    Enable script debug output.  Set to _trace_ for full command logging.
 - `QUIET`:
     Only show progress of downloads.
 - `VERBOSE`:
@@ -113,7 +113,7 @@ These command-line options are equivalent to the given scripts:
 - `--format-list` ; see `format.sh`
 - `--javascript` ; see `playlist.sh`
 
-These options display help, version and usage information:
+These options display usage, help or version information:
 
 - `--usage` | `--help` | `-h` | `-?`
 - `--version`
