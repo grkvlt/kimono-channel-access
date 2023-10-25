@@ -33,18 +33,6 @@ defined:
 - video.sh:
     Download videos with best overall quality.
 
-Alternative functions can also be performed using the following names:
-
-- formats.sh:
-    List available formats for a video id.
-- playlist.sh:
-    Generate the JS code to create a playlist file from a YouTube mix.
-- movies.sh:
-    Check if files are already downloaded to `~/Movies` folder.
-
-Note that the `SCRIPT` variable or `--script` option can also be used to
-access these functions.
-
 ## CONFIG
 
 The following environment variables can be used to apply or override
@@ -56,6 +44,8 @@ configuration:
     available formats, and check the manual page and documentation
     for `yt-dlp` itself for more in-depth information about creating
     custom specifications.
+- `QUALITY`:
+    Set different pre-defined format specifications.
 - `SCRIPT`:
     Enable different script functionality.
 - `FRAGMENTS`:
@@ -95,12 +85,13 @@ environment variables above to configure operation. The following options
 require a value to be specified:
 
 - `--format` | `-F` _format_ ; see `FORMAT`
+- `--quality` _quality_ ; see `QUALITY`
 - `--script` | `-s` _script_ ; see `SCRIPT`
 - `--playlist` | `-P` | `-p` _filename_ ; see `PLAYLIST`
 - `--fragments` _n_ ; see `FRAGMENTS`
 - `--target` | `-T` | `-t` folder ; see `TARGET`
 
-These options do not accept a value:
+These options for debugging and output configuration do not need a value:
 
 - `--debug` | `-D` ; see `DEBUG`
 - `--trace` ; see `DEBUG`
@@ -108,14 +99,19 @@ These options do not accept a value:
 - `--quiet` | `-q` ; see `QUIET`
 - `--verbose` | `-V`; see `VERBOSE`
 
-These command-line options are equivalent to the given scripts:
+These options enable different functionality for the script:
 
-- `--format-list` ; see `format.sh`
-- `--javascript` ; see `playlist.sh`
+- `--list-formats`:
+    List available formats for the video ids.
+- `--javascript`:
+    Generate the JS code to create a playlist file from a YouTube mix.
+- `--find-ids`:
+    Check if files are already downloaded to `~/Movies` folder.
 
 These options display usage, help or version information:
 
-- `--usage` | `--help` | `-h` | `-?`
+- `--usage`
+- `--help` | `-h` | `-?`
 - `--version`
 
 The configuration values set using environment variables will be overridden
@@ -123,20 +119,23 @@ by values set using the command-line options. So, the following command will
 download the video into the `${MOVIES}/Lectures/MIT-1001/` target folder:
 
 ```shell
-    TARGET=Courses/MIT-1001 kimono.sh --target Lectures/MIT-1001 XxxxxXXX
+    TARGET=Courses/MIT-1001 kimono.sh --target Lectures/MIT-1001 XXXXXXXX
 ```
 
 ## EXAMPLES
 
 ```shell
-    PLAYLIST=url.lst playlist.sh
-    kimono.sh --format 18 -T Interesting/Science XxxxxXXX XxxxxXYY XxxxxXZZ
-    FORMAT=139+340 FRAGMENTS=2 PLAYLIST=catalog.out kimono.sh
+    kimono.sh --format 18 -T Interesting/Science XXXXXXXX XXXXXXYY XXXXXXZZ
+    FORMAT="139+340" FRAGMENTS="2" PLAYLIST="catalog.out" kimono.sh
+    kimono.sh --quality "podcast" XXXXXXXX
     audio.sh -P mixtape.txt
-    podcast.sh XxxxxXXX
-    cut -d, -f2 videos.csv | video.sh 
-    DEBUG=y SCRIPT=video kimono.sh XxxxxXXX
-    movies.sh XxxxxXXX XxxxxXYY
+    podcast.sh XXXXXXXX
+    video.sh --quiet XXXXXXXX
+    cut -d, -f2 videos.csv | youtube.sh 
+    DEBUG=y SCRIPT=video kimono.sh XXXXXXXX
+    kimono.sh --list-formats --playlist "index.txt"
+    kimono.sh --find-ids XXXXXXXX XXXXXXYY
+    PLAYLIST="mixtape.txt" kimono.sh --javascript
 ```
 
 ---

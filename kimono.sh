@@ -19,14 +19,17 @@
 #
 # EXAMPLES
 #
-#     PLAYLIST=url.lst playlist.sh
-#     kimono.sh --format 18 -T Interesting/Science XxxxxXXX XxxxxXYY XxxxxXZZ
-#     FORMAT=139+340 FRAGMENTS=2 PLAYLIST=catalog.out kimono.sh
+#     kimono.sh --format 18 -T Interesting/Science XXXXXXXX XXXXXXYY XXXXXXZZ
+#     FORMAT="139+340" FRAGMENTS="2" PLAYLIST="catalog.out" kimono.sh
+#     kimono.sh --quality "podcast" XXXXXXXX
 #     audio.sh -P mixtape.txt
-#     podcast.sh XxxxxXXX
-#     cut -d, -f2 videos.csv | video.sh 
-#     DEBUG=y SCRIPT=video kimono.sh XxxxxXXX
-#     movies.sh XxxxxXXX XxxxxXYY
+#     podcast.sh XXXXXXXX
+#     video.sh --quiet XXXXXXXX
+#     cut -d, -f2 videos.csv | youtube.sh 
+#     DEBUG=y SCRIPT=video kimono.sh XXXXXXXX
+#     kimono.sh --list-formats --playlist "index.txt"
+#     kimono.sh --find-ids XXXXXXXX XXXXXXYY
+#     PLAYLIST="mixtape.txt" kimono.sh --javascript
 #
 # Copyright: 2023 by Andrew Donald Kennedy
 # License: CC BY-SA 4.0
@@ -56,7 +59,7 @@ function version() {
 
 # parse command-line arguments
 short="F:P:p:T:t:s:DqVh?"
-long="format:,format-list,javascript,playlist:,fragments:,target:,script:,debug,trace,dryrun,quiet,verbose,version,help,usage"
+long="format:,quality:,list-formats,find-ids,javascript,playlist:,fragments:,target:,script:,debug,trace,dryrun,quiet,verbose,version,help,usage"
 arguments=$(getopt -o ${short} --long ${long} -- "$@")
 if [[ $? -ne 0 ]]; then
     help
@@ -68,20 +71,26 @@ while [ : ] ; do
         -F | --format)
             FORMAT="$2"
             shift 2 ;;
-        --format-list)
-            SCRIPT="format"
+        --quality)
+            QUALITy="$2"
+            shift 2 ;;
+        --list-formats)
+            SCRIPT="list-formats"
+            shift ;;
+        --find-ids)
+            SCRIPT="find-ids"
             shift ;;
         --javascript)
-            SCRIPT="playlist"
+            SCRIPT="javascript"
             shift ;;
+        --script)
+            SCRIPT="$2"
+            shift 2 ;;
         -P | -p | --playlist)
             PLAYLIST="$2"
             shift 2 ;;
         -T | -t | --target)
             TARGET="$2"
-            shift 2 ;;
-        -s | --script)
-            SCRIPT="$2"
             shift 2 ;;
         --fragments)
             FRAGMENTS="$2"
@@ -129,7 +138,7 @@ temp=$(mktemp -d -t ${script})
 
 # output javascript for playlist file creation
 playlist="${PLAYLIST:-playlist.txt}"
-if [ "${script}" == "playlist" ] ; then
+if [ "${script}" == "javascript" ] ; then
     cat <<EOF
 // ---- copy into browser developer tools console ----
 function download(filename, text) {
@@ -171,7 +180,7 @@ else
 fi
 
 # check available formats
-if [[ "${script}" = "format" ]] ; then
+if [[ "${script}" = "list-formats" ]] ; then
     yt-dlp -F \
             --cookies-from-browser chrome \
             ${source}
@@ -205,7 +214,7 @@ paths="--paths temp:${temp} \
        --paths ${target}"
 
 # search for downloaded file ids
-if [ "${script}" == "movies" ] ; then
+if [ "${script}" == "find-ids" ] ; then
     if [ $# -gt 0 ] ; then
         for id in $@ ; do
             find ${home} -name "*${id}*" -print ||
@@ -216,17 +225,18 @@ if [ "${script}" == "movies" ] ; then
 fi
 
 # configure download file format
-bestvideo="bestvideo[ext=mp4]+bestaudio[ext=m4a]"
+video="bestvideo[ext=mp4]+bestaudio[ext=m4a]"
 podcast="worstvideo[ext=mp4]+bestaudio.2[ext=m4a]"
 audio="bestaudio[ext=m4a]"
 youtube="best[height<=1080][ext=mp4]"
-case ${script} in
+quality=${QUALITY:-${script}}
+case ${quality} in
     podcast)
         format=${FORMAT:-${podcast}} ;;
     audio)
         format=${FORMAT:-${audio}} ;;
     video)
-        format=${FORMAT:-${bestvideo}} ;;
+        format=${FORMAT:-${video}} ;;
     kimono | youtube)
         format=${FORMAT:-${youtube}} ;;
     *)
