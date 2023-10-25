@@ -59,7 +59,7 @@ function version() {
 
 # parse command-line arguments
 short="F:P:p:T:t:s:DqVh?"
-long="format:,quality:,list-formats,find-ids,javascript,playlist:,fragments:,target:,script:,debug,trace,dryrun,quiet,verbose,version,help,usage"
+long="format:,quality:,list-formats,find-ids,javascript,playlist:,order:,fragments:,target:,script:,debug,trace,dryrun,quiet,verbose,version,help,usage"
 arguments=$(getopt -o ${short} --long ${long} -- "$@")
 if [[ $? -ne 0 ]]; then
     help
@@ -73,6 +73,9 @@ while [ : ] ; do
             shift 2 ;;
         --quality)
             QUALITy="$2"
+            shift 2 ;;
+        --order)
+            ORDER="$2"
             shift 2 ;;
         --list-formats)
             SCRIPT="list-formats"
@@ -284,6 +287,11 @@ else
              --sub-langs en \
              --merge-output-format mp4"
 fi
+order="${ORDER:-random}"
+case ${order} in
+    random)
+        options="${options} --playlist-random" ;;
+esac
 
 # setup yt-dlp command-line options
 command="yt-dlp \
@@ -295,7 +303,6 @@ command="yt-dlp \
              --restrict-filenames \
              ${paths} \
              --no-warnings \
-             --playlist-random \
              --format ${format} \
              ${options} \
              --xattrs \

@@ -54,6 +54,8 @@ configuration:
     Set the name of the file containing ids or urls.
 - `TARGET`:
     Set the target folder to save files to.
+- `ORDER`:
+   Either **random** or **sequential** order for playlist downloads.
 - `CONFIG`:
     Additional configuration options for `yt-dlp`.
 
@@ -89,7 +91,8 @@ require a value to be specified:
 - `--script` | `-s` _script_ ; see `SCRIPT`
 - `--playlist` | `-P` | `-p` _filename_ ; see `PLAYLIST`
 - `--fragments` _n_ ; see `FRAGMENTS`
-- `--target` | `-T` | `-t` folder ; see `TARGET`
+- `--target` | `-T` | `-t` _folder_ ; see `TARGET`
+- `--order` _order_ ; see `ORDER`
 
 These options for debugging and output configuration do not need a value:
 
