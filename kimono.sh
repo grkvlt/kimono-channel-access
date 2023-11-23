@@ -3,8 +3,8 @@
 # K I M O N O . S H
 # =================
 #
-# Version: 0.8.8
-# Updated: 28 September 2023
+# Version: 0.8.9
+# Updated: 23 November 2023
 #
 # Downloads video and audio files from https://youtu.be/ using
 # the yt-dlp(1) utility. See the README.md file on GitHub for
@@ -30,11 +30,14 @@
 #     kimono.sh --list-formats --playlist "index.txt"
 #     kimono.sh --find-ids XXXXXXXX XXXXXXYY
 #     PLAYLIST="mixtape.txt" kimono.sh --javascript
+#     kimono.sh --duplicates -T Recent
 #
 # Copyright: 2023 by Andrew Donald Kennedy
 # License: CC BY-SA 4.0
 # Author: mailto:andrew.international@gmail.com
 # Source: https://github.com/grkvlt/kimono-channel-access
+
+# function definitions
 
 # output help text
 function help() {
@@ -57,9 +60,16 @@ function version() {
     keyword "Version"
 }
 
+# exported variables
+export DEBUG DRYRUN FORMAT FRAGMETS
+export ORDER PLAYLIST QUALITY QUIET
+export SCRIPT TARGET VERBOSE
+
 # parse command-line arguments
 short="F:P:p:T:t:s:DqVh?"
-long="format:,quality:,list-formats,find-ids,javascript,playlist:,order:,fragments:,target:,script:,debug,trace,dryrun,quiet,verbose,version,help,usage"
+long="format:,quality:,list-formats,find-ids,duplicates,javascripts"
+long="${long},playlist:,order:,fragments:,target:,script:,debug,trace"
+long="${long},dryrun,quiet,verbose,version,help,usage"
 arguments=$(getopt -o ${short} --long ${long} -- "$@")
 if [[ $? -ne 0 ]]; then
     help
@@ -79,6 +89,9 @@ while [ : ] ; do
             shift 2 ;;
         --list-formats)
             SCRIPT="list-formats"
+            shift ;;
+        --duplicates)
+            SCRIPT="duplicates"
             shift ;;
         --find-ids)
             SCRIPT="find-ids"
@@ -131,6 +144,16 @@ done
 # debug output
 [ "${DEBUG}" == "trace" ] && set -x
 
+# set output level
+if [[ "${QUIET}" ]] ; then
+    level="--quiet"
+elif [[ "${VERBOSE}" || "${DEBUG}" = "trace" ]] ; then
+    level="--verbose"
+fi
+if [[ "${DRYRUN}" && -z "${DEBUG}" ]] ; then
+    DEBUG="${DRYRUN}"
+fi
+
 # get our script name
 script=$(basename $0 .sh | tr "A-Z" "a-z")
 script=${SCRIPT:-${script}}
@@ -161,25 +184,6 @@ download("${playlist}", urls);
 // ---- press return to execute download function ----
 EOF
     exit
-fi
-
-# check arguments for playlist files
-if [ $# -eq 0 ] ; then
-    file="-"
-    for f in download.txt ${script}.txt ${playlist} ; do
-        if [ -f "${f}" ] ; then
-            file="${f}"
-        fi
-    done
-    # remove comments, trim whitespace and blank lines
-    cat ${file} |
-        sed -e "s/#.*$//g" \
-            -e "s/^[ 	]*//g" \
-            -e "s/[ 	]*\$//g" |
-        grep -v "^\$" > ${temp}/source
-    source="--batch-file ${temp}/source"
-else
-    source="-- $@"
 fi
 
 # check available formats
@@ -227,6 +231,19 @@ if [ "${script}" == "find-ids" ] ; then
     exit
 fi
 
+# search for duplicate files by id
+if [ "${script}" == "duplicates" ] ; then
+    find ${target} -type f -name "*\[???????????\].*" |
+            rev |
+            cut -d. -f2 |
+            cut -c2-12 |
+            rev |
+            sort |
+            uniq -d |
+            xargs $0 --find-ids
+    exit
+fi
+
 # configure download file format
 video="bestvideo[ext=mp4]+bestaudio[ext=m4a]"
 podcast="worstvideo[ext=mp4]+bestaudio.2[ext=m4a]"
@@ -246,19 +263,28 @@ case ${quality} in
         format=${FORMAT:-best} ;;
 esac
 
-# set output level
-if [[ "${QUIET}" ]] ; then
-    level="--quiet"
-elif [[ "${VERBOSE}" || "${DEBUG}" = "trace" ]] ; then
-    level="--verbose"
-fi
-if [[ "${DRYRUN}" && -z "${DEBUG}" ]] ; then
-    DEBUG="${DRYRUN}"
+# check arguments for playlist files
+if [ $# -eq 0 ] ; then
+    file="-"
+    for f in download.txt ${script}.txt ${playlist} ; do
+        if [ -f "${f}" ] ; then
+            file="${f}"
+        fi
+    done
+    # remove comments, trim whitespace and blank lines
+    cat ${file} |
+        sed -e "s/#.*$//g" \
+            -e "s/^[ 	]*//g" \
+            -e "s/[ 	]*\$//g" |
+        grep -v "^\$" > ${temp}/source
+    source="--batch-file ${temp}/source"
+else
+    source="-- $@"
 fi
 
 # output debug information
 [ "${DEBUG}" ] && (
-    cat <<EOF
+    cat >&2 <<EOF
 [debug] script = ${script}
 [debug] format = ${format}
 [debug] source = ${file:-$@}
@@ -271,7 +297,7 @@ EOF
         sed -e "s/--paths //g" |
         tr -s " " |
         sed -e "s/ /\n/g" |
-        sed -e "s/^/[debug] /g"
+        sed -e "s/^/[debug] /g" >&2
 )
 
 # set options for video or audio
@@ -311,5 +337,5 @@ command="yt-dlp \
              ${source}"
 
 # download from youtube
-[ "${DEBUG}" ] && echo "[debug] ${command}" | tr -s " "
+[ "${DEBUG}" ] && echo "[debug] ${command}" | tr -s " " >&2
 [ ! "${DRYRUN}" ] && ( mkdir -p ${target} ; ${command} )

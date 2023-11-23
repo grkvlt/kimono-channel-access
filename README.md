@@ -1,7 +1,7 @@
 # K I M O N O . S H
 
-> Version: 0.8.8  
-> Updated: 28 September 2023
+> Version: 0.8.9
+> Updated: 23 November 2023
 
 Downloads video and audio files from [YouTube](https://youtu.be/) using
 the _yt-dlp(1)_ utility.
@@ -102,14 +102,18 @@ These options for debugging and output configuration do not need a value:
 - `--quiet` | `-q` ; see `QUIET`
 - `--verbose` | `-V`; see `VERBOSE`
 
-These options enable different functionality for the script:
+These options will execute portions of the script which provide additional
+functionality. The script operates differently from its default behaviour,
+but still uses the same shared variables and configuration:
 
 - `--list-formats`:
     List available formats for the video ids.
 - `--javascript`:
     Generate the JS code to create a playlist file from a YouTube mix.
 - `--find-ids`:
-    Check if files are already downloaded to `~/Movies` folder.
+    Search for files in the target `Movies` folder by id.
+- `--duplicates`:
+    Search the target `Movies` folder for files with the same id.
 
 These options display usage, help or version information:
 
@@ -139,6 +143,7 @@ download the video into the `${MOVIES}/Lectures/MIT-1001/` target folder:
     kimono.sh --list-formats --playlist "index.txt"
     kimono.sh --find-ids XXXXXXXX XXXXXXYY
     PLAYLIST="mixtape.txt" kimono.sh --javascript
+    kimono.sh --duplicates -T Recent
 ```
 
 ---
