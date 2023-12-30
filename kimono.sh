@@ -76,7 +76,7 @@ if [[ $? -ne 0 ]]; then
     help
     exit 1
 fi
-eval set -- "$arguments"
+eval set -- "${arguments}"
 while true ; do
     case "$1" in
         -F | -f | --format)
@@ -143,7 +143,7 @@ while true ; do
 done
 
 # debug output
-[ "${DEBUG}" == "trace" ] && set -x
+[[ "${DEBUG}" == "trace" ]] && set -x
 
 # set output level
 if [[ "${QUIET}" ]] ; then
@@ -157,7 +157,7 @@ fi
 
 # get our script name
 script=$(basename $0 .sh | tr "A-Z" "a-z")
-script=${SCRIPT:-${script}}
+script="${SCRIPT:-${script}}"
 
 # make a temporary file for playlist content
 temp=$(mktemp -d -t ${script})
@@ -196,12 +196,12 @@ if [[ "${script}" = "list-formats" ]] ; then
 fi
 
 # check for different target folder
-if [ "${script}" == "audio" ] ; then
+if [[ "${script}" == "audio" || "${script}" == "javascript" ]] ; then
     home="${MUSIC:-${HOME}/Music}"
 else
     home="${MOVIES:-${HOME}/Movies}"
 fi
-if [ "${TARGET}" ] ; then
+if [[ "${TARGET}" ]] ; then
     if [[ "${TARGET:0:1}" != "/" &&
           "${TARGET:0:1}" != "." &&
           "${TARGET:0:1}" != "~" ]] ; then
@@ -222,8 +222,8 @@ paths="--paths temp:${temp} \
        --paths ${target}"
 
 # search for downloaded file ids
-if [ "${script}" == "find-ids" ] ; then
-    if [ $# -gt 0 ] ; then
+if [[ "${script}" == "find-ids" ]] ; then
+    if [[ $# -gt 0 ]] ; then
         for id in $@ ; do
             find ${home} -name "*${id}*" -print ||
                 find . -name "*${id}*" -print
@@ -250,25 +250,25 @@ video="bestvideo[ext=mp4]+bestaudio[ext=m4a]"
 podcast="worstvideo[ext=mp4]+bestaudio.2[ext=m4a]"
 audio="bestaudio[ext=m4a]"
 youtube="best[height<=1080][ext=mp4]"
-quality=${QUALITY:-${script}}
-case ${quality} in
+quality="${QUALITY:-${script}}"
+case "${quality}" in
     podcast)
-        format=${FORMAT:-${podcast}} ;;
+        format="${FORMAT:-${podcast}}" ;;
     audio)
-        format=${FORMAT:-${audio}} ;;
+        format="${FORMAT:-${audio}}" ;;
     video)
-        format=${FORMAT:-${video}} ;;
+        format="${FORMAT:-${video}}" ;;
     kimono | youtube)
-        format=${FORMAT:-${youtube}} ;;
+        format="${FORMAT:-${youtube}}" ;;
     *)
-        format=${FORMAT:-best} ;;
+        format="${FORMAT:-best}" ;;
 esac
 
 # check arguments for playlist files
-if [ $# -eq 0 ] ; then
+if [[ $# -eq 0 ]] ; then
     file="-"
     for f in download.txt ${script}.txt ${playlist} ; do
-        if [ -f "${f}" ] ; then
+        if [[ -f "${f}" ]] ; then
             file="${f}"
         fi
     done
@@ -284,7 +284,7 @@ else
 fi
 
 # output debug information
-[ "${DEBUG}" ] && (
+[[ "${DEBUG}" ]] && (
     cat >&2 <<EOF
 [debug] script = ${script}
 [debug] format = ${format}
@@ -302,7 +302,7 @@ EOF
 )
 
 # set options for video or audio
-if [ "${script}" == "audio" ] ; then
+if [[ "${script}" == "audio" ]] ; then
     options="--audio-format mp3 \
              --extract-audio"
 else
@@ -315,7 +315,7 @@ else
              --merge-output-format mp4"
 fi
 order="${ORDER:-random}"
-case ${order} in
+case "${order}" in
     random)
         options="${options} --playlist-random" ;;
 esac
@@ -338,5 +338,5 @@ command="yt-dlp \
              ${source}"
 
 # download from youtube
-[ "${DEBUG}" ] && echo "[debug] ${command}" | tr -s " " >&2
-[ ! "${DRYRUN}" ] && ( mkdir -p ${target} ; ${command} )
+[[ "${DEBUG}" ]] && echo "[debug] ${command}" | tr -s " " >&2
+[[ ! "${DRYRUN}" ]] && ( mkdir -p ${target} ; ${command} )
