@@ -66,26 +66,39 @@ export ORDER PLAYLIST QUALITY QUIET
 export SCRIPT TARGET VERBOSE
 
 # parse command-line arguments
-short="F:P:p:T:t:s:DqVh?"
-long="format:,quality:,list-formats,find-ids,duplicates,javascripts"
-long="${long},playlist:,order:,fragments:,target:,script:,debug,trace"
-long="${long},dryrun,quiet,verbose,version,help,usage"
+short="F:f:Q:q:S:s:P:p:T:t:vh?"
+long="format:,quality:,order:,script:,playlist:,target:,fragments:, \
+        list-formats,duplicates,find-ids,javascript, \
+        debug,trace,quiet,verbose,dryrun, \
+        version,help,usage"
 arguments=$(getopt -o ${short} --long ${long} -- "$@")
 if [[ $? -ne 0 ]]; then
     help
     exit 1
 fi
 eval set -- "$arguments"
-while [ : ] ; do
+while true ; do
     case "$1" in
-        -F | --format)
+        -F | -f | --format)
             FORMAT="$2"
             shift 2 ;;
-        --quality)
+        -Q | -q | --quality)
             QUALITy="$2"
             shift 2 ;;
         --order)
             ORDER="$2"
+            shift 2 ;;
+        -S | -s | --script)
+            SCRIPT="$2"
+            shift 2 ;;
+        -P | -p | --playlist)
+            PLAYLIST="$2"
+            shift 2 ;;
+        -T | -t | --target)
+            TARGET="$2"
+            shift 2 ;;
+        --fragments)
+            FRAGMENTS="$2"
             shift 2 ;;
         --list-formats)
             SCRIPT="list-formats"
@@ -99,34 +112,22 @@ while [ : ] ; do
         --javascript)
             SCRIPT="javascript"
             shift ;;
-        --script)
-            SCRIPT="$2"
-            shift 2 ;;
-        -P | -p | --playlist)
-            PLAYLIST="$2"
-            shift 2 ;;
-        -T | -t | --target)
-            TARGET="$2"
-            shift 2 ;;
-        --fragments)
-            FRAGMENTS="$2"
-            shift 2 ;;
-        -D | --debug)
+        --debug)
             DEBUG="y"
             shift ;;
         --trace)
             DEBUG="trace"
             shift ;;
-        -q | --quiet)
+        --quiet)
             QUIET="y"
             shift ;;
-        -V | --verbose)
+        --verbose)
             VERBOSE="y"
             shift ;;
         --dryrun)
             DRYRUN="y"
             shift ;;
-        --version)
+        -v | --version)
             version
             exit 0 ;;
         -h | --help | --usage | -\?)

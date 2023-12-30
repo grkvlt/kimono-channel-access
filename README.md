@@ -86,9 +86,9 @@ Various command-line options can be used in combination with the
 environment variables above to configure operation. The following options
 require a value to be specified:
 
-- `--format` | `-F` _format_ ; see `FORMAT`
-- `--quality` _quality_ ; see `QUALITY`
-- `--script` | `-s` _script_ ; see `SCRIPT`
+- `--format` | `-F` | `-f` _format_ ; see `FORMAT`
+- `--quality` | `-Q` | `-q` _quality_ ; see `QUALITY`
+- `--script` | `-S` | `-s` _script_ ; see `SCRIPT`
 - `--playlist` | `-P` | `-p` _filename_ ; see `PLAYLIST`
 - `--fragments` _n_ ; see `FRAGMENTS`
 - `--target` | `-T` | `-t` _folder_ ; see `TARGET`
@@ -96,11 +96,11 @@ require a value to be specified:
 
 These options for debugging and output configuration do not need a value:
 
-- `--debug` | `-D` ; see `DEBUG`
+- `--debug` ; see `DEBUG`
 - `--trace` ; see `DEBUG`
 - `--dryrun` ; see `DRYRUN`
-- `--quiet` | `-q` ; see `QUIET`
-- `--verbose` | `-V`; see `VERBOSE`
+- `--quiet` ; see `QUIET`
+- `--verbose` ; see `VERBOSE`
 
 These options will execute portions of the script which provide additional
 functionality. The script operates differently from its default behaviour,
@@ -119,7 +119,7 @@ These options display usage, help or version information:
 
 - `--usage`
 - `--help` | `-h` | `-?`
-- `--version`
+- `--version` | `-v`
 
 The configuration values set using environment variables will be overridden
 by values set using the command-line options. So, the following command will
@@ -132,16 +132,17 @@ download the video into the `${MOVIES}/Lectures/MIT-1001/` target folder:
 ## EXAMPLES
 
 ```shell
-    kimono.sh --format 18 -T Interesting/Science XXXXXXXX XXXXXXYY XXXXXXZZ
+    kimono.sh --format 18 -T Interesting/Science XXXXXXXX YYYYYYYY ZZZZZZZZ
     FORMAT="139+340" FRAGMENTS="2" PLAYLIST="catalog.out" kimono.sh
     kimono.sh --quality "podcast" XXXXXXXX
+    youtube.sh --order PPPPPPPPPPPPPPPP
     audio.sh -P mixtape.txt
     podcast.sh XXXXXXXX
     video.sh --quiet XXXXXXXX
     cut -d, -f2 videos.csv | youtube.sh 
     DEBUG=y SCRIPT=video kimono.sh XXXXXXXX
     kimono.sh --list-formats --playlist "index.txt"
-    kimono.sh --find-ids XXXXXXXX XXXXXXYY
+    kimono.sh --find-ids XXXXXXXX YYYYYYYY
     PLAYLIST="mixtape.txt" kimono.sh --javascript
     kimono.sh --duplicates -T Recent
 ```
