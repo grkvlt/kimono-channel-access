@@ -161,39 +161,7 @@ script="${SCRIPT:-${script}}"
 
 # make a temporary file for playlist content
 temp=$(mktemp -d -t ${script})
-[ "${DEBUG}" ] || trap "rm -rf ${temp}" EXIT
-
-# output javascript for playlist file creation
-playlist="${PLAYLIST:-playlist.txt}"
-if [ "${script}" == "javascript" ] ; then
-    cat <<EOF
-// ---- copy into browser developer tools console ----
-function download(filename, text) {
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-}
-var urls = "";
-document.querySelectorAll("ytd-playlist-panel-video-renderer").forEach(function(element) {
-    urls += element.querySelector("#wc-endpoint").href.split("&")[0] + "\n";
-});
-download("${playlist}", urls);
-// ---- press return to execute download function ----
-EOF
-    exit
-fi
-
-# check available formats
-if [[ "${script}" = "list-formats" ]] ; then
-    yt-dlp -F \
-            --cookies-from-browser chrome \
-            ${source}
-    exit
-fi
+[[ "${DEBUG}" ]] || trap "rm -rf ${temp}" EXIT
 
 # check for different target folder
 if [[ "${script}" == "audio" || "${script}" == "javascript" ]] ; then
@@ -220,6 +188,39 @@ fi
 paths="--paths temp:${temp} \
        --paths home:${home} \
        --paths ${target}"
+
+# output javascript for playlist file creation
+playlist="${PLAYLIST:-playlist.txt}"
+if [[ "${script}" == "javascript" ]] ; then
+    cat <<EOF
+// ---- copy into browser developer tools console ----
+function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
+var urls = "";
+document.querySelectorAll("ytd-playlist-panel-video-renderer").forEach(function(element) {
+    urls += element.querySelector("#wc-endpoint").href.split("&")[0] + "\n";
+});
+download("${target}/${playlist}", urls);
+// ---- press return to execute download function ----
+EOF
+    exit
+fi
+
+# check available formats
+if [[ "${script}" = "list-formats" ]] ; then
+    yt-dlp --quiet \
+            --cookies-from-browser chrome \
+            --list-formats \
+            ${source}
+    exit
+fi
 
 # search for downloaded file ids
 if [[ "${script}" == "find-ids" ]] ; then
